@@ -1,6 +1,6 @@
 # babel-plugin-stateful-functional-react-components
 
-✨_Compiles stateful functional React components syntax into ES2015 classes_✨
+✨ _Compiles stateful functional React components syntax into ES2015 classes_ ✨
 
 WARNING: _This plugin is experimental. If you are interested in taking this further, please open an issue or submit a PR with improvements._
 
