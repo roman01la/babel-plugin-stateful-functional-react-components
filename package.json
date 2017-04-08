@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-stateful-functional-react-components",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Compiles stateful functional React components syntax into ES2015 classes",
   "repository": "roman01la/babel-plugin-stateful-functional-react-components",
   "main": "lib/index.js",
