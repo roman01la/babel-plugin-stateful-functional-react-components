@@ -11,6 +11,10 @@ WARNING: _This plugin is experimental. If you are interested in taking this furt
 ## Why?
 Because functional components are concise and it's annoying to write ES2015 classes when all you need is local state.
 
+## Advantages
+- No runtime overhead
+- No dependencies that adds additional KB's to your bundle
+
 ## Example
 
 __Input__
