@@ -1,6 +1,6 @@
 # babel-plugin-stateful-functional-react-components
 
-✨ _Stateful functional React components without runtime overhead_ ✨
+✨ _Stateful functional React components without runtime overhead (inspired by ClojureScript)_ ✨
 
 _Compiles stateful functional React components syntax into ES2015 classes_
 
