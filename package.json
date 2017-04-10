@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-stateful-functional-react-components",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Stateful functional React components without runtime overhead",
   "repository": "roman01la/babel-plugin-stateful-functional-react-components",
   "main": "lib/index.js",
