@@ -13,11 +13,14 @@ Because functional components are concise and it's annoying to write ES2015 clas
 
 __Input__
 ```js
-const Counter = (props, state = { val: 0 }, setState) => (
+const Counter = ({ text }, { val } = { val: 0 }, setState) => (
   <div>
-    <button onClick={() => setState({ val: --state.val })}>-</button>
-    <span>{state.val}</span>
-    <button onClick={() => setState({ val: ++state.val })}>+</button>
+    <h1>{text}</h1>
+    <div>
+      <button onClick={() => setState({ val: val - 1 })}>-</button>
+      <span>{val}</span>
+      <button onClick={() => setState({ val: val + 1 })}>+</button>
+    </div>
   </div>
 );
 ```
@@ -29,13 +32,19 @@ class Counter extends React.Component {
     super();
     this.state = { val: 0 };
   }
-
   render() {
+
+    const { text } = this.props;
+    const { val } = this.state;
+
     return (
       <div>
-        <button onClick={() => this.setState({ val: --this.state.val })}>-</button>
-        <span>{this.state.val}</span>
-        <button onClick={() => this.setState({ val: ++this.state.val })}>+</button>
+        <h1>{text}</h1>
+        <div>
+          <button onClick={() => this.setState({ val: val - 1 })}>-</button>
+          <span>{val}</span>
+          <button onClick={() => this.setState({ val: val + 1 })}>+</button>
+        </div>
       </div>
     );
   }
@@ -43,8 +52,7 @@ class Counter extends React.Component {
 ```
 
 ## Requirements
-- The second parameter _must_ be named `state`
-- The second parameter _must_ be assigned default value
+- The second parameter (_state_) _must_ be assigned default value (_initial state_)
 - The third parameter _must_ be named `setState`
 
 ## Installation
