@@ -6,7 +6,7 @@ _Compiles stateful functional React components syntax into ES2015 classes_
 
 WARNING: _This plugin is experimental. If you are interested in taking this further, please open an issue or submit a PR with improvements._
 
-[![npm](https://img.shields.io/npm/v/npm.svg?style=flat-square)](https://www.npmjs.com/package/babel-plugin-stateful-functional-react-components)
+[![npm](https://img.shields.io/npm/v/babel-plugin-stateful-functional-react-components.svg?style=flat-square)](https://www.npmjs.com/package/babel-plugin-stateful-functional-react-components)
 
 ## Why?
 Because functional components are concise and it's annoying to write ES2015 classes when all you need is local state.
