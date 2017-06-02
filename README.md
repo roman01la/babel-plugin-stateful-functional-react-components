@@ -8,6 +8,16 @@ WARNING: _This plugin is experimental. If you are interested in taking this furt
 
 [![npm](https://img.shields.io/npm/v/babel-plugin-stateful-functional-react-components.svg?style=flat-square)](https://www.npmjs.com/package/babel-plugin-stateful-functional-react-components)
 
+## Table of Contents
+- [Why?](#why)
+- [Advantages](#advantages)
+- [Example](#example)
+- [API](#api)
+- [Important Notes](#important-notes)
+- [Installation](#installation)
+- [Usage](#usage)
+- [License](#license)
+
 ## Why?
 Because functional components are concise and it's annoying to write ES2015 classes when all you need is local state.
 
