@@ -61,7 +61,7 @@ class Counter extends React.Component {
 
 ## API
 
-**(props, [context], state = initialState, setState)**
+**(props [,context], state = initialState, setState)**
 
 - `props` is component’s props i.e. `this.props`
 - `context` is optional parameter which corresponds to React’s context
