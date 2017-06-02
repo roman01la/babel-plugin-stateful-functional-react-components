@@ -60,6 +60,18 @@ function rewriteFunctionalComponent(t, path, isCtx) {
         t.MemberExpression(
           t.ThisExpression(),
           t.Identifier('props')))]));
+  
+    // Ensure React is avaible in the global scope
+  if (!path.scope.hasGlobal("React") && !path.scope.hasBinding("React")) {
+    throw new Error(
+      `
+React was not found.
+		
+You need to add this import on top of your file:
+import React from 'react'
+	`
+    );
+  }
 
   // rewrite functional component into ES2015 class
   path.replaceWith(
