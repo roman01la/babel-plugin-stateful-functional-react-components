@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Counter = (props, { val } = { val: 0 }, setState) => (
   <div>
     <button onClick={() => setState({ val: val - 1 })}>-</button>

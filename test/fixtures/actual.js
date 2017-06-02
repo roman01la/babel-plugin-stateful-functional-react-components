@@ -1,3 +1,5 @@
+import React from 'react';
+
 const Counter = (props, state = { val: 0 }, setState) => {
   const { val } = state;
   const v = state.val;
