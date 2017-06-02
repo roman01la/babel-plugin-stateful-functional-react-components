@@ -68,9 +68,10 @@ class Counter extends React.Component {
 - `state` is component’s state, `initialState` is required
 - `setState` maps to `this.setState`
 
-## Requirements
+## Important notes
 - _state_ parameter _must_ be assigned default value (_initial state_)
 - The last parameter _must_ be named `setState`
+- Even though this syntax makes components look _functional_, don't forget that they are also _stateful_, which means that hot-reloading won't work for them.
 
 ## Installation
 ```
