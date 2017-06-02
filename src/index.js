@@ -1,4 +1,4 @@
-function rewriteFunctionalComponent(t, path, isCtx) {
+function rewriteFunctionalComponent(t, path, isCtx, isWithHelpers) {
 
   const bodyPath = path.get('declarations.0.init.body');
   const decl = path.node.declarations[0];
@@ -8,8 +8,11 @@ function rewriteFunctionalComponent(t, path, isCtx) {
   const ctxRefs = isCtx ? decl.init.params[1] : null;
   const stateRefs = isCtx ? decl.init.params[2].left : decl.init.params[1].left;
   const stateVal = isCtx ? decl.init.params[2].right : decl.init.params[1].right;
+  const helpersRefs = isWithHelpers ? isCtx ? decl.init.params[3] : decl.init.params[2] : null;
+  const helpers = isWithHelpers ? helpersRefs.properties.map((prop) => prop.key.name) : [];
+  const bindEntries = [];
 
- // replace `setState` with `this.setState`
+  // replace `setState` with `this.setState`
   bodyPath.traverse({
     CallExpression(path) {
       if (path.node.callee.name === 'setState') {
@@ -22,6 +25,27 @@ function rewriteFunctionalComponent(t, path, isCtx) {
       }
     }
   });
+
+  // replace `bindTo` with `this[bindTarget]`
+  if (helpers.some((h) => h === 'bindTo')) {
+    bodyPath.traverse({
+      CallExpression(path) {
+
+        if (path.node.callee.name === 'bindTo') {
+
+          const bindTarget = path.node.arguments[0].value;
+          const bindFn = path.node.arguments[1];
+
+          bindEntries.push([bindTarget, bindFn]);
+
+          path.replaceWith(
+            t.MemberExpression(
+              t.ThisExpression(),
+              t.Identifier(bindTarget)));
+        }
+      }
+    });
+  }
 
   // get return value as a block statement
   const returnVal = t.isBlockStatement(bodyPath.node)
@@ -60,13 +84,13 @@ function rewriteFunctionalComponent(t, path, isCtx) {
         t.MemberExpression(
           t.ThisExpression(),
           t.Identifier('props')))]));
-  
+
     // Ensure React is avaible in the global scope
   if (!path.scope.hasGlobal("React") && !path.scope.hasBinding("React")) {
     throw new Error(
       `
 React was not found.
-		
+
 You need to add this import on top of your file:
 import React from 'react'
 	`
@@ -96,7 +120,17 @@ import React from 'react'
                 t.MemberExpression(
                   t.ThisExpression(),
                   t.Identifier('state')),
-                stateVal))])),
+                stateVal)),
+            ...bindEntries.map(([methodName, fn]) => {
+              return (
+                t.ExpressionStatement(
+                  t.AssignmentExpression(
+                    '=',
+                    t.MemberExpression(
+                      t.ThisExpression(),
+                      t.Identifier(methodName)),
+                    fn)));
+            })])),
         t.ClassMethod(
           'method',
           t.Identifier('render'),
@@ -125,6 +159,17 @@ function isStatefulFnWithContext(t, init) {
   );
 }
 
+function isStatefulFnWithHelpers(t, init) {
+  return (
+    t.isArrowFunctionExpression(init) &&
+    init.params.length === 3 &&
+    t.isAssignmentPattern(init.params[1]) &&
+    t.isObjectExpression(init.params[1].right) &&
+    t.isObjectPattern(init.params[2]) &&
+    init.params[2].properties.some((prop) => prop.key.name === 'setState')
+  );
+}
+
 export default function (babel) {
   const { types: t } = babel;
 
@@ -134,9 +179,10 @@ export default function (babel) {
 
         const init = path.node.declarations[0].init;
         const isCtx = isStatefulFnWithContext(t, init);
+        const isWithHelpers = isStatefulFnWithHelpers(t, init);
 
-        if (isStatefulFn(t, init) || isCtx) {
-          rewriteFunctionalComponent(t, path, isCtx);
+        if (isStatefulFn(t, init) || isCtx || isWithHelpers) {
+          rewriteFunctionalComponent(t, path, isCtx, isWithHelpers);
         }
       }
     }

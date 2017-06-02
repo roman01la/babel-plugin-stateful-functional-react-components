@@ -1,18 +1,22 @@
 import React from 'react';
 
-const Counter = (props, { val } = { val: 0 }, setState) => (
+const Input = ({ value, onChange }) => (
+  <input value={value} onChange={onChange} />
+)
+
+const Counter = (props, { val } = { val: 0 }, { setState, bindTo }) => (
   <div>
-    <button onClick={() => setState({ val: val - 1 })}>-</button>
+    <button onClick={bindTo('_dec', () => setState({ val: val - 1 }))}>-</button>
     <span>{val}</span>
-    <button onClick={() => setState({ val: val + 1 })}>+</button>
+    <button onClick={bindTo('_inc', () => setState({ val: val + 1 }))}>+</button>
   </div>
 );
 
-const App = ({ text }, { theme }, { val } = { val: '' }, setState) => {
+const App = ({ text }, { val } = { val: '' }, { setState, bindTo }) => {
   return (
-    <div className={theme}>
+    <div>
       <h1>{text}</h1>
-      <input value={val} onChange={(e) => setState({ val: e.target.value })} />
+      <Input value={val} onChange={bindTo('_handleInput', (e) => setState({ val: e.target.value }))} />
       <Counter />
     </div>
   );

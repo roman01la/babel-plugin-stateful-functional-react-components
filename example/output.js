@@ -1,9 +1,15 @@
 import React from 'react';
 
+const Input = ({ value, onChange }) => React.createElement('input', { value: value, onChange: onChange });
+
 class Counter extends React.Component {
   constructor() {
     super();
     this.state = { val: 0 };
+
+    this._dec = () => this.setState({ val: val - 1 });
+
+    this._inc = () => this.setState({ val: val + 1 });
   }
 
   render() {
@@ -14,7 +20,7 @@ class Counter extends React.Component {
       null,
       React.createElement(
         'button',
-        { onClick: () => this.setState({ val: val - 1 }) },
+        { onClick: this._dec },
         '-'
       ),
       React.createElement(
@@ -24,7 +30,7 @@ class Counter extends React.Component {
       ),
       React.createElement(
         'button',
-        { onClick: () => this.setState({ val: val + 1 }) },
+        { onClick: this._inc },
         '+'
       )
     );
@@ -36,22 +42,23 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = { val: '' };
+
+    this._handleInput = e => this.setState({ val: e.target.value });
   }
 
   render() {
     const { text } = this.props;
-    const { theme } = this.context;
     const { val } = this.state;
 
     return React.createElement(
       'div',
-      { className: theme },
+      null,
       React.createElement(
         'h1',
         null,
         text
       ),
-      React.createElement('input', { value: val, onChange: e => this.setState({ val: e.target.value }) }),
+      React.createElement(Input, { value: val, onChange: this._handleInput }),
       React.createElement(Counter, null)
     );
   }
