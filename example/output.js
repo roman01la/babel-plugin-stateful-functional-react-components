@@ -38,11 +38,12 @@ class App extends React.Component {
 
   render() {
     const { text } = this.props;
+    const { theme } = this.context;
     const { val } = this.state;
 
     return React.createElement(
       'div',
-      null,
+      { className: theme },
       React.createElement(
         'h1',
         null,

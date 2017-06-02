@@ -6,9 +6,9 @@ const Counter = (props, { val } = { val: 0 }, setState) => (
   </div>
 );
 
-const App = ({ text }, { val } = { val: '' }, setState) => {
+const App = ({ text }, { theme }, { val } = { val: '' }, setState) => {
   return (
-    <div>
+    <div className={theme}>
       <h1>{text}</h1>
       <input value={val} onChange={(e) => setState({ val: e.target.value })} />
       <Counter />

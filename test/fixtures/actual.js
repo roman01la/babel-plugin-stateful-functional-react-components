@@ -12,3 +12,13 @@ const Counter = (props, state = { val: 0 }, setState) => {
     </div>
   );
 };
+
+const App = ({ text }, { theme }, { val } = { val: '' }, setState) => {
+  return (
+    <div className={theme}>
+      <h1>{text}</h1>
+      <input value={val} onChange={(e) => setState({ val: e.target.value })} />
+      <Counter />
+    </div>
+  );
+};

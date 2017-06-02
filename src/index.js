@@ -1,12 +1,15 @@
-function rewriteFunctionalComponent(t, path) {
+function rewriteFunctionalComponent(t, path, isCtx) {
 
   const bodyPath = path.get('declarations.0.init.body');
+  const decl = path.node.declarations[0];
 
-  const className = path.node.declarations[0].id;
-  const propsRefs = path.node.declarations[0].init.params[0];
-  const stateRefs = path.node.declarations[0].init.params[1].left;
-  const stateVal = path.node.declarations[0].init.params[1].right;
+  const className = decl.id;
+  const propsRefs = decl.init.params[0];
+  const ctxRefs = isCtx ? decl.init.params[1] : null;
+  const stateRefs = isCtx ? decl.init.params[2].left : decl.init.params[1].left;
+  const stateVal = isCtx ? decl.init.params[2].right : decl.init.params[1].right;
 
+ // replace `setState` with `this.setState`
   bodyPath.traverse({
     CallExpression(path) {
       if (path.node.callee.name === 'setState') {
@@ -20,19 +23,14 @@ function rewriteFunctionalComponent(t, path) {
     }
   });
 
+  // get return value as a block statement
   const returnVal = t.isBlockStatement(bodyPath.node)
     ? bodyPath.node
     : t.BlockStatement([
             t.ReturnStatement(bodyPath.node)]);
 
+  // rewrite `state` declaration
   returnVal.body.unshift(
-    t.VariableDeclaration(
-      'const',
-      [t.VariableDeclarator(
-        propsRefs,
-        t.MemberExpression(
-          t.ThisExpression(),
-          t.Identifier('props')))]),
     t.VariableDeclaration(
       'const',
       [t.VariableDeclarator(
@@ -41,6 +39,29 @@ function rewriteFunctionalComponent(t, path) {
           t.ThisExpression(),
           t.Identifier('state')))]));
 
+  // rewrite `context` declaration
+  if (isCtx) {
+    returnVal.body.unshift(
+      t.VariableDeclaration(
+        'const',
+        [t.VariableDeclarator(
+          ctxRefs,
+          t.MemberExpression(
+            t.ThisExpression(),
+            t.Identifier('context')))]));
+  }
+
+  // rewrite `props` declaration
+  returnVal.body.unshift(
+    t.VariableDeclaration(
+      'const',
+      [t.VariableDeclarator(
+        propsRefs,
+        t.MemberExpression(
+          t.ThisExpression(),
+          t.Identifier('props')))]));
+
+  // rewrite functional component into ES2015 class
   path.replaceWith(
     t.ClassDeclaration(
       className,
@@ -72,6 +93,26 @@ function rewriteFunctionalComponent(t, path) {
       []));
 }
 
+function isStatefulFn(t, init) {
+  return (
+    t.isArrowFunctionExpression(init) &&
+    init.params.length === 3 &&
+    t.isAssignmentPattern(init.params[1]) &&
+    t.isObjectExpression(init.params[1].right) &&
+    init.params[2].name === 'setState'
+  );
+}
+
+function isStatefulFnWithContext(t, init) {
+  return (
+    t.isArrowFunctionExpression(init) &&
+    init.params.length === 4 &&
+    t.isAssignmentPattern(init.params[2]) &&
+    t.isObjectExpression(init.params[2].right) &&
+    init.params[3].name === 'setState'
+  );
+}
+
 export default function (babel) {
   const { types: t } = babel;
 
@@ -80,14 +121,10 @@ export default function (babel) {
       VariableDeclaration(path) {
 
         const init = path.node.declarations[0].init;
+        const isCtx = isStatefulFnWithContext(t, init);
 
-        if (t.isArrowFunctionExpression(init) &&
-            init.params.length === 3 &&
-            t.isAssignmentPattern(init.params[1]) &&
-            t.isObjectExpression(init.params[1].right) &&
-            init.params[2].name === 'setState') {
-
-          rewriteFunctionalComponent(t, path);
+        if (isStatefulFn(t, init) || isCtx) {
+          rewriteFunctionalComponent(t, path, isCtx);
         }
       }
     }

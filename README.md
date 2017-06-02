@@ -19,8 +19,9 @@ Because functional components are concise and it's annoying to write ES2015 clas
 
 __Input__
 ```js
-const Counter = ({ text }, { val } = { val: 0 }, setState) => (
-  <div>
+//                props      context   state    init state
+const Counter = ({ text }, { theme }, { val } = { val: 0 }, setState) => (
+  <div className={theme}>
     <h1>{text}</h1>
     <div>
       <button onClick={() => setState({ val: val - 1 })}>-</button>
@@ -41,10 +42,11 @@ class Counter extends React.Component {
   render() {
 
     const { text } = this.props;
+    const { theme } = this.context;
     const { val } = this.state;
 
     return (
-      <div>
+      <div className={theme}>
         <h1>{text}</h1>
         <div>
           <button onClick={() => this.setState({ val: val - 1 })}>-</button>
@@ -57,9 +59,18 @@ class Counter extends React.Component {
 }
 ```
 
+## API
+
+**(props, [context], state = initialState, setState)**
+
+- `props` is component’s props i.e. `this.props`
+- `context` is optional parameter which corresponds to React’s context
+- `state` is component’s state, `initialState` is required
+- `setState` maps to `this.setState`
+
 ## Requirements
-- The second parameter (_state_) _must_ be assigned default value (_initial state_)
-- The third parameter _must_ be named `setState`
+- _state_ parameter _must_ be assigned default value (_initial state_)
+- The last parameter _must_ be named `setState`
 
 ## Installation
 ```
